@@ -219,13 +219,14 @@ export function BookingCalendar({
         <span className="hidden sm:inline">· Weekends disabled</span>
       </div>
 
-      <table
-        role="grid"
-        aria-label={label}
-        tabIndex={0}
-        onKeyDown={onKeyDown}
-        className="mt-2 w-full border-separate border-spacing-0.5 sm:border-spacing-1 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-white rounded-lg"
-      >
+      <div className="overflow-x-auto w-full -mx-1 px-1">
+        <table
+          role="grid"
+          aria-label={label}
+          tabIndex={0}
+          onKeyDown={onKeyDown}
+          className="mt-2 w-full min-w-[320px] border-separate border-spacing-0.5 sm:border-spacing-1 focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-white rounded-lg table-fixed"
+        >
         <thead>
           <tr>
             {weekdays.map((wd) => (
@@ -279,6 +280,7 @@ export function BookingCalendar({
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

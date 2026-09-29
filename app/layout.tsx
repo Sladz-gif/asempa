@@ -100,7 +100,7 @@ export default function RootLayout({
       lang="en-GH"
       className={`${playfair.variable} ${inter.variable} antialiased`}
     >
-      <body className="min-h-screen flex flex-col bg-warm-surface text-warm-text">
+      <body className="min-h-screen flex flex-col bg-warm-surface text-warm-text overflow-x-hidden">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-md focus:bg-gold focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-black-900"

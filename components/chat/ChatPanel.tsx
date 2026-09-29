@@ -105,7 +105,7 @@ export function ChatPanel() {
     >
       <div
         className={cn(
-          "w-[340px] sm:w-[390px] h-[550px] sm:h-[600px] max-h-[80vh] flex flex-col",
+          "w-[340px] sm:w-[390px] h-[550px] sm:h-[600px] max-h-[80vh] max-w-[calc(100vw-2.5rem)] flex flex-col",
           "rounded-2xl border border-gold/25 bg-white shadow-gold-lg overflow-hidden"
         )}
       >
