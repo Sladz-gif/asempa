@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { loadInsight } from "@/lib/mdx";
 import { practiceAreas } from "@/content/practice-areas";
 import { attorneys } from "@/content/attorneys";
-import { MDXRemote } from "next-mdx-remote/rsc";
+import { MDXRemote } from "next-mdx-remote";
+import { serialize } from "next-mdx-remote/serialize";
 import { Divider } from "@/components/ui/Divider";
 import { BreadcrumbListJSONLD, ArticleJSONLD } from "@/components/seo/JSONLD";
 import { FIRM } from "@/lib/config";
@@ -41,6 +42,8 @@ export default async function InsightPage({ params }: InsightPageProps) {
   if (!insight) {
     notFound();
   }
+
+  const mdxSource = await serialize(insight.content);
 
   const author = insight.authorAttorneyId
     ? attorneys.find((a) => a.id === insight.authorAttorneyId)
@@ -127,7 +130,7 @@ export default async function InsightPage({ params }: InsightPageProps) {
             </div>
 
             <div className="prose prose-lg prose-stone max-w-none">
-              <MDXRemote source={insight.content} />
+              <MDXRemote {...mdxSource} />
             </div>
 
             {relatedPracticeAreas.length > 0 && (
