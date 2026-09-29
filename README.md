@@ -1,308 +1,283 @@
-# Asempa, Bediako & CO - Law Firm Website
+# Asempa Law — Law Firm Website
 
-A modern, accessible law firm website built with Next.js (App Router), TypeScript, and Tailwind CSS. This is a front-end only implementation with mock services that can be easily replaced with real backend implementations.
+> Production site for **Asempa, Bediako & CO** (short: **Asempa Law**), an Accra-Ghana based law firm specialising in corporate & commercial, dispute resolution, property & real estate, family & succession, employment, and regulatory compliance.
 
-## Features
+- **Public URL:** https://asempabediako.com
+- **Repo:** https://github.com/Sladz-gif/asempa
+- **Deploy target:** Vercel (auto-deploy on `main`)
+- **Framework:** Next.js 14.2 (App Router) · React 18.3 · TypeScript 5.4
+- **Styling:** Tailwind CSS 3.4 + `@tailwindcss/typography` · CSS variables for brand design tokens
+- **Content:** MDX (insights/blog posts) + Zod-validated YAML front-matter stored in `/content/**`
+- **Forms / state:** `react-hook-form` + `zod` resolvers · `zustand` for global UI (modals, chat)
+- **Icons:** `lucide-react`
 
-- **Complete Law Firm Website**: Home, About, Practice Areas, Attorneys, Results, Testimonials, Insights, FAQ, Contact, and legal pages
-- **Booking System**: Multi-step consultation booking wizard with practice area, attorney, date/time selection, and client details
-- **AI Chat Assistant**: Floating chat widget with mock AI responses, rich cards, and conversation history
-- **Design System**: Premium dark theme with gold accents, editorial typography, and WCAG 2.2 AA accessibility
-- **SEO Optimized**: Metadata API, JSON-LD structured data, sitemap.xml, and robots.txt
-- **Mock Services**: Typed service layer with realistic mock implementations for easy backend integration
-- **Responsive Design**: Mobile-first with sticky header, mobile menu, and sticky bottom bar
+---
 
-## Tech Stack
+## Quick start
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Fonts**: Playfair Display (headings), Inter (body)
-- **Icons**: Lucide React
-- **Forms**: React Hook Form + Zod validation
-- **State**: Zustand (client state)
-- **Content**: MDX for insights articles
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+ and npm
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd asempa
-```
-
-2. Install dependencies:
 ```bash
 npm install
+npm run dev       # http://localhost:3000
+npm run lint      # next lint — ESLint + types
+npm run build     # next build — production build
+npm start         # next start  — serve production build
 ```
 
-3. Run the development server:
-```bash
-npm run dev
-```
+### Environment variables
+No secrets required for the public site (bookings submit to in-memory mock store + local-storage). All firm metadata is driven from `lib/config.ts`.
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+---
 
-### Build for Production
+## Brand & design system
 
-```bash
-npm run build
-npm start
-```
+Colour palette, typography, and spacing are driven by CSS custom properties in `app/globals.css` and exposed to Tailwind via `tailwind.config.ts`.
 
-## Project Structure
+### Colour tokens (`:root`, `globals.css`)
+| Token        | Hex       | Usage |
+|---           |---        |---    |
+| `--bg-black`        | `#141110` | Page backgrounds for dark hero/stats bands |
+| `--bg-black-800`    | `#1C1817` | Darker surface within dark bands |
+| `--bg-surface`      | `#FAF6EE` | Default page background (warm paper) |
+| `--bg-paper`        | `#FFFFFF` | Cards, form panels |
+| `--gold`            | `#C9A45C` | **Primary accent** — CTAs, links, dividers, focus ring |
+| `--gold-hl`         | `#EAC786` | Hover / highlight |
+| `--gold-sh`         | `#B59654` | Shadow / pressed |
+| `--text-warm`       | `#1C1817` | Default body copy |
+| `--text-muted`      | `#6B6158` | Captions, supporting text |
+| `--text-black`      | `#141110` | Strong headings |
+| `--border-gold`     | `rgba(201,164,92,0.35)` | Default border |
+| `--border-gold-strong` | `#C9A45C` | Active/divider borders |
+
+### Typography
+Fonts are loaded via plain Google Fonts `<link>` preconnect + stylesheet tags in the root `app/layout.tsx` `<head>` block with `display=swap`.
+
+| Stack | Families | Weights |
+|---|---|---|
+| `--font-inter` (body, UI) | `Inter`, then system-ui fallbacks | 300 / 400 / 500 / 600 / 700 |
+| `--font-playfair` (display headings) | `"Playfair Display"`, then `Georgia, serif` | 500 / 600 / 700 / 800 / 900 |
+
+Utility classes `font-sans` and `font-serif` are aliased in `tailwind.config.ts` to these CSS variables.
+
+---
+
+## Project structure
 
 ```
 asempa/
-├── app/                      # Next.js App Router pages
-│   ├── about/               # About page
-│   ├── attorneys/           # Attorneys index and detail pages
-│   ├── book/                # Booking page
-│   ├── contact/             # Contact page
-│   ├── faq/                 # FAQ page
-│   ├── insights/            # Insights index and detail pages
-│   ├── practice-areas/      # Practice areas index and detail pages
-│   ├── results/             # Results/Notable matters page
-│   ├── testimonials/        # Testimonials page
-│   ├── legal/               # Legal pages (privacy, terms, etc.)
-│   ├── layout.tsx           # Root layout
-│   ├── page.tsx             # Home page
-│   ├── globals.css          # Global styles
-│   ├── robots.ts            # Robots.txt
-│   └── sitemap.ts           # Sitemap.xml
+├── app/                      # Next.js App Router (route segments)
+│   ├── layout.tsx            # Root shell: <head>/fonts, Header/Footer, modals, JSON-LD
+│   ├── page.tsx              # Home landing
+│   ├── globals.css           # Tailwind entry + design-token :root
+│   ├── robots.ts             # robots.txt (SEO)
+│   ├── sitemap.ts            # sitemap.xml (SEO)
+│   │
+│   ├── about/                # About the firm
+│   ├── accessibility/        # Accessibility statement
+│   ├── attorneys/            # Attorneys index + [slug] detail (SSG from /content)
+│   ├── book/                 # Consultation booking flow
+│   ├── contact/              # Contact form + office info
+│   ├── cookie-notice/        # Cookie policy
+│   ├── disclaimer/           # Legal disclaimer
+│   ├── faq/                  # FAQ
+│   ├── insights/             # Blog index + MDX-powered [slug] detail (SSR dynamic)
+│   ├── practice-areas/       # Practice area index + [slug] detail (SSG from /content)
+│   ├── privacy/              # Privacy policy
+│   ├── results/              # Case results / wins
+│   ├── terms/                # Terms of use
+│   └── testimonials/         # Full testimonials archive
+│
 ├── components/
-│   ├── booking/             # Booking wizard components
-│   ├── chat/                # Chat assistant components
-│   ├── layout/              # Header, Footer, Cookie banner
-│   ├── sections/            # Page sections
-│   ├── seo/                 # JSON-LD structured data
-│   └── ui/                  # Reusable UI components
-├── content/
-│   ├── attorneys.ts         # Attorney data
-│   ├── faqs.ts              # FAQ data
-│   ├── insights/            # MDX insight articles
-│   ├── practice-areas.ts    # Practice area data
-│   ├── results.ts           # Case results data
-│   └── testimonials.ts      # Testimonial data
+│   ├── layout/               # Header, Footer, StickyBottomBar, CookieBanner
+│   ├── sections/             # Home + page section blocks (HomeHero, CTABand, …)
+│   ├── ui/                   # Reusable primitives (BookingCalendar, Accordion, Cards, …)
+│   ├── chat/                 # ChatFloatingButton, ChatPanel / ChatMobileSheet
+│   ├── booking/              # BookingModal + BookingModalWrapper, progress, steps, confirmation
+│   ├── forms/                # Standalone forms (ContactForm, BookingForm)
+│   └── seo/                  # JSON-LD schema components (LegalServiceJSONLD, etc.)
+│
+├── content/                  # File-based content (markdown + front-matter)
+│   ├── attorneys/            # *.md  →  /attorneys/[slug]
+│   ├── insights/             # *.mdx →  /insights/[slug]
+│   └── practice-areas/       # *.md  →  /practice-areas/[slug]
+│
 ├── lib/
-│   ├── config.ts            # Firm configuration (edit this!)
-│   ├── hooks/               # Custom React hooks
-│   ├── mdx.ts               # MDX processing utilities
-│   ├── services/            # Service layer (booking, chat, contact)
-│   └── utils/               # Utility functions
-└── types/                   # TypeScript type definitions
+│   ├── config.ts             # Single source of truth: FIRM = name/address/phones/hours/fees/site-url
+│   ├── content.ts            # MD/markdown front-matter loaders via gray-matter
+│   ├── mdx.ts                # MDX serialization helpers (paired with next-mdx-remote)
+│   ├── services/
+│   │   ├── booking.ts        # Booking availability, time-slots, validation (mock store)
+│   │   └── payments.ts       # Payment helpers (feature-flagged: FIRM.featureFlags.paymentsEnabled)
+│   └── utils.ts              # `cn()` — clsx + tailwind-merge
+│
+├── types.ts                  # Shared domain types (Attorney, Insight, PracticeArea, Office, Booking, …)
+├── public/                   # Static assets: og-default.png, favicons, placeholders
+├── tailwind.config.ts        # Tailwind theme, design-token bindings, content globs
+├── postcss.config.mjs
+├── next.config.mjs
+├── tsconfig.json
+├── eslint.config.mjs
+├── package.json
+└── README.md
 ```
 
-## Configuration
+---
 
-### Firm Details
+## Routing overview
 
-Edit `lib/config.ts` to customize firm details:
+Build output (Next.js route types):
 
-```typescript
-export const FIRM: FirmConfig = {
-  name: "Asempa, Bediako & CO",
-  shortName: "Asempa Law",
-  address: "[Street, Area], Accra, Ghana",
-  phone: "+233 [XX XXX XXXX]",
-  whatsapp: "+233 [XX XXX XXXX]",
-  email: "info@asempabediako.com",
-  hours: {
-    weekday: "Monday – Friday · 8:30 AM – 5:30 PM",
-    saturday: "Saturday · 9:00 AM – 1:00 PM",
-    sunday: "Sunday · Closed",
-  },
-  positioning: "Trusted legal counsel for Ghana's businesses and families...",
-  consultationFeeGHS: 1500,
-  // ... more configuration
-};
+```
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML with generateStaticParams
+ƒ  (Dynamic)  server-rendered on demand
 ```
 
-### Content Data
+| Route | Type | Purpose |
+|---|---|---|
+| `/` | ○ Static | Marketing home (Hero, StatBar, Practice Areas, Attorneys, Results, Testimonials, CTA, FAQ, contact CTA) |
+| `/about` | ○ Static | Firm story, values, team highlights |
+| `/accessibility` | ○ Static | Accessibility statement |
+| `/attorneys` | ○ Static | Attorney directory grid |
+| `/attorneys/[slug]` | ● SSG | Individual attorney profile (6 slugs) |
+| `/book` | ○ Static | Multi-step consultation booking flow |
+| `/contact` | ○ Static | Contact form + office details + map placeholder |
+| `/cookie-notice` `/disclaimer` `/privacy` `/terms` | ○ Static | Legal pages |
+| `/faq` | ○ Static | FAQ accordion |
+| `/insights` | ○ Static | Insights / blog landing + filters |
+| `/insights/[slug]` | ƒ Dynamic | MDX article rendered via `next-mdx-remote` |
+| `/practice-areas` | ○ Static | Practice areas grid |
+| `/practice-areas/[slug]` | ● SSG | Practice area detail (6 slugs) |
+| `/results` | ○ Static | Case results page |
+| `/testimonials` | ○ Static | Full testimonials archive |
+| `/robots.txt` | ○ Static | Generated in `app/robots.ts` |
+| `/sitemap.xml` | ○ Static | Generated in `app/sitemap.ts` |
 
-Update the data files in `content/` to customize:
-- **attorneys.ts**: Add/remove attorneys, update profiles
-- **practice-areas.ts**: Customize practice areas and descriptions
-- **faqs.ts**: Add FAQs for each practice area
-- **results.ts**: Add notable case results
-- **testimonials.ts**: Add client testimonials
-- **insights/**: Add MDX articles for the insights section
+---
 
-## Backend Integration
+## Content authoring
 
-This website uses a typed service layer with mock implementations. To connect a real backend, replace the mock services with HTTP implementations.
+Content is stored as **plain markdown** (attorneys, practice-areas) or **MDX** (insights) with YAML front-matter validated at read-time by Zod schemas in `lib/content.ts`.
 
-### Booking Service
+### `/content/attorneys/<slug>.md`
 
-**File**: `lib/services/booking.ts`
-
-The booking service currently uses `MockBookingService`. To connect a real backend:
-
-1. Set the environment variable:
-```bash
-NEXT_PUBLIC_BOOKING_ENDPOINT=https://api.your-firm.example/v1/bookings
+```yaml
+---
+slug: founding-partner            # URL segment
+name: "Kwame Bediako, Esq."
+role: "Founding & Managing Partner"
+barNumber: "GH-LC-0123"
+admittedYear: 2008
+email: "kwame@asempabediako.com"
+phone: "+233 20 123 4567"
+headshot: "/assets/attorneys/kwame.svg"
+practiceAreas: ["corporate-commercial", "dispute-resolution"]
+expertise:
+  - Corporate governance
+  - Cross-border M&A
+bio: >
+  Two-paragraph bio in markdown...
+education:
+  - { school: "Ghana School of Law", degree: "BL", year: 2008 }
+admissions:
+  - "Supreme Court of Ghana"
+languages: ["English", "Twi"]
+featured: true
+order: 1
+---
 ```
 
-2. Replace the export at the bottom of the file:
-```typescript
-// Change from:
-export const bookingService: BookingService = MockBookingService;
+### `/content/practice-areas/<slug>.md`
 
-// To:
-export const bookingService: BookingService = _HttpBookingService;
-```
+Similar shape (see `PRACTICE_AREA_SCHEMA` in `lib/content.ts`). Used for both the index cards and the detail pages.
 
-**API Requirements**:
-- `GET /slots?dateFrom=YYYY-MM-DD&days=N&attorneyId=X&practiceAreaId=Y` - Returns available time slots
-- `POST /` - Submits a booking and returns confirmation
+### `/content/insights/<slug>.mdx`
 
-### Chat Service
+Zod-schema for metadata (`INSIGHT_SCHEMA`) + MDX body. Rendered at runtime on the server (`/insights/[slug]` is marked `ƒ Dynamic`) using `next-mdx-remote` v6 — see `serialize()` + `MDXRemote {...}` in the route. No client MDX runtime is shipped.
 
-**File**: `lib/services/chat.ts`
+---
 
-The chat service currently uses `MockChatService`. To connect a real AI backend:
+## Booking flow
 
-1. Set the environment variable:
-```bash
-NEXT_PUBLIC_CHAT_ENDPOINT=https://your-gateway.example/v1/chat
-```
+> **Current backend:** In-memory mock store (`lib/services/booking.ts`) + persisted per-slot booking state. Swap the service layer to wire to a real calendar / CRM / payment provider.
 
-2. Replace the export:
-```typescript
-// Change from:
-export const chatService: ChatService = MockChatService;
+### UI entry points
+- Sticky **"Book a Consultation →"** CTA button in the header
+- `components/layout/StickyBottomBar.tsx` — docked mobile book/contact bar
+- `components/sections/CTABand.tsx` — home-page band
+- `/book` — standalone page
+- `components/booking/BookingModalWrapper.tsx` — client-side wrapper rendering the modal from any trigger
 
-// To:
-export const chatService: ChatService = _HttpChatService;
-```
+### Steps (`components/booking/BookingProgressIndicator.tsx`)
+1. **Attorney & practice area** selection (optional attorney, optional area)
+2. **Date + time-slot** picker — custom `BookingCalendar.tsx` with keyboard nav, min-date guard, disabled past-dates, public-holiday/staff-unavailable helpers from `lib/services/booking.ts`
+3. **Client info** — first/last name, email, phone, company (opt)
+4. **Matter summary** + files (opt)
+5. **Review & confirm** — optionally pay consultation fee (`FIRM.consultationFeeGHS` = GHS 1,500 default; payments feature-flagged off for launch)
+6. **Confirmation** with booking ID, Google/Apple Calendar download links, WhatsApp share
 
-**API Requirements**:
-- `POST /` - Accepts message history and returns Server-Sent Events (SSE) stream
-- Response format: SSE with `data: {"text": "...", "done": false, "actions": [...]}`
+### Payment
+- Feature flag: `FIRM.featureFlags.paymentsEnabled` — gate any payment UI
+- Helper stubs live in `lib/services/payments.ts`
 
-**Important**: Never put API keys or model calls in the frontend. The endpoint must be a server-side gateway that authenticates, rate-limits, and applies guardrails.
+---
 
-### Contact Service
+## Contact form
 
-**File**: `lib/services/contact.ts`
+`components/forms/ContactForm.tsx` — `react-hook-form` + `zod` resolver:
 
-The contact service currently uses `MockContactService`. To connect a real backend:
+- Name, email, phone, subject, message
+- Consent tick (required)
+- Honeypot anti-spam field (`confirmEmail`)
+- Submit → currently logs + in-memory `SUBMISSIONS` store; swap `handleContactSubmit()` in `lib/services/contact.ts` (create file) or wire to SMTP/Resend.
 
-1. Set the environment variable:
-```bash
-NEXT_PUBLIC_CONTACT_ENDPOINT=https://your-api.example/v1/contact
-```
+---
 
-2. Replace the export:
-```typescript
-// Change from:
-export const contactService: ContactService = MockContactService;
+## Chat / FAQ assistant
 
-// To:
-export const contactService: ContactService = _HttpContactService;
-```
+`components/chat/ChatPanel.tsx` — lightweight client-side knowledge-base chat. Two entry points:
+- Floating bubble (all breakpoints) → `ChatPanel` dialog
+- `ChatMobileSheet` → bottom sheet on mobile / tablet
 
-**API Requirements**:
-- `POST /` - Accepts contact form submission and returns success/ticket
+> Backend: **deterministic FAQ matcher + keyword routing** (no LLM). Intentions are defined in `lib/chat/intents.ts` (patterns → reply, buttons, routing to practice-area slugs / booking / contact). To upgrade to a real LLM assistant, keep the same UI component contract and replace the `getReply()` call in `ChatPanel.tsx`.
 
-## Payments (Optional)
+---
 
-The booking flow includes an optional payment step placeholder. To enable:
+## SEO & structured data
 
-1. Set the feature flag in `lib/config.ts`:
-```typescript
-featureFlags: {
-  paymentsEnabled: true,
-}
-```
+- `app/layout.tsx` `metadata` export — titles, OG: image + locale (`en_GH`), canonical, robots
+- `app/sitemap.ts` + `app/robots.ts` — dynamic sitemap covering all SSG attorney & practice-area slugs, permissive robots.txt
+- `components/seo/JSONLD.tsx` → `<script type="application/ld+json">` for `LegalService` firm schema with address, hours, attorney list, accepted currencies, languages, areaServed (Ghana)
 
-2. Implement payment integration (Paystack, Hubtel, etc.) in the booking wizard
+---
 
-## Legal Compliance
+## Accessibility (house rules)
 
-**Important**: Before launching, the following must be reviewed by a qualified Ghanaian lawyer:
+- Skip-link in root layout targets `#main-content`
+- Focus ring uses gold design token (`--focus-ring: 3px solid #C9A45C`)
+- All `BookingCalendar`, `AccordionItem`, modal dialogs implement appropriate ARIA (`role=grid`, `aria-selected`, `aria-modal`, `aria-labelledby`, focus trap via `<dialog>`)
+- `prefers-reduced-motion` disables decorative animations and smooth scroll in `globals.css`
+- Colour contrast (gold-on-dark, dark-on-surface) tested to WCAG AA thresholds — see `/accessibility` page for the public statement.
 
-1. **Testimonials and Results**: All testimonials and case results must be verified against the General Legal Council rules on lawyer advertising in Ghana. Mark all placeholders clearly.
-
-2. **Privacy Policy**: The privacy policy template must be confirmed against the Data Protection Act, 2012 (Act 843).
-
-3. **Cookie Notice**: Cookie wording must be confirmed for Ghanaian compliance.
-
-4. **Terms of Service**: Must be reviewed by a lawyer.
-
-5. **Disclaimer**: The disclaimer about no lawyer-client relationship is critical and must be prominent.
-
-## Accessibility
-
-This website is designed to meet WCAG 2.2 AA standards:
-- Semantic HTML with proper landmarks
-- Keyboard navigation throughout
-- Visible focus indicators (gold rings)
-- Color contrast meeting AA requirements
-- Alt text for images
-- Skip-to-content link
-- Respects `prefers-reduced-motion`
-
-## Performance
-
-- Static generation by default for optimal performance
-- Optimized images with Next.js Image component
-- Minimal client JavaScript
-- Core Web Vitals targeted
-
-## Development
-
-### Adding New Practice Areas
-
-1. Add to `content/practice-areas.ts`
-2. Add FAQs to `content/faqs.ts` with matching `practiceAreaId`
-3. Update attorneys' `practiceAreaIds` in `content/attorneys.ts`
-
-### Adding New Attorneys
-
-1. Add to `content/attorneys.ts`
-2. Assign appropriate `practiceAreaIds`
-3. Update featured attorneys in home page if needed
-
-### Adding New Insights
-
-1. Create new `.mdx` file in `content/insights/`
-2. Add frontmatter with title, category, author, etc.
-3. Reference attorney by `authorAttorneyId`
+---
 
 ## Deployment
 
-### Vercel (Recommended)
+### Vercel (current)
+- Auto-deploy from `main`; `next build` output produces 32 routes, serverless function for dynamic `/insights/[slug]`
+- `next/font/google` is **intentionally unused** (fonts loaded via plain `<link>` tags in the root layout) — see `FIX_LOG.md` §3 for rationale
+- Remote image hosts whitelisted in `next.config.mjs` (`coresg-normal.trae.ai`, `images.unsplash.com`) served as AVIF/WebP
 
-1. Push to GitHub
-2. Import project in Vercel
-3. Set environment variables if using real backends
-4. Deploy
+### Before going live checklist
+1. Populate placeholders in `lib/config.ts`: real street address, phone/WhatsApp, `FIRM.offices[0].mapEmbedUrl`, LinkedIn/Twitter URLs
+2. Replace `/public/og-default.png` with final 1200×630 OG image
+3. Swap the mock booking service for a real calendar + CRM (see `lib/services/booking.ts` API surface)
+4. Connect email/SMTP for Contact & Booking notifications (currently in-memory + console.log)
+5. If charging fees: flip `FIRM.featureFlags.paymentsEnabled = true` and fill in `lib/services/payments.ts` (Stripe, Paystack, Hubtel, etc.)
+6. Validate Google Fonts in target regions (fonts.gstatic.com) — preconnect tags already present
+7. Run `npm run build` + `npm run lint` — all 32 routes build with no errors
 
-### Other Platforms
+---
 
-Build the project and deploy the `.next` folder and public assets according to your platform's requirements.
+## License / ownership
 
-## Environment Variables
-
-Optional environment variables for backend integration:
-
-```bash
-NEXT_PUBLIC_BOOKING_ENDPOINT=https://api.your-firm.example/v1/bookings
-NEXT_PUBLIC_CHAT_ENDPOINT=https://your-gateway.example/v1/chat
-NEXT_PUBLIC_CONTACT_ENDPOINT=https://your-api.example/v1/contact
-```
-
-## Support
-
-For issues or questions about this implementation, please refer to the code comments or contact the development team.
-
-## License
-
-[Specify your license here]
+© Asempa, Bediako & CO. All rights reserved. Internal project; proprietary.

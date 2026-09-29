@@ -13,6 +13,7 @@ export function AskAssistantButton() {
       size="lg"
       onClick={() => openChat(true)}
       leftIcon={<MessageCircle aria-hidden="true" className="h-4 w-4" />}
+      className="text-white hover:text-black-900 border-white/70 border-[1.5px] hover:border-gold"
     >
       Ask our assistant
     </Button>
