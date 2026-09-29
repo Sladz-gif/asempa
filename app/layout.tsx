@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -9,20 +8,6 @@ import { ChatMobileSheet } from "@/components/chat/ChatPanel";
 import { BookingModalWrapper } from "@/components/booking/BookingModalWrapper";
 import { LegalServiceJSONLD } from "@/components/seo/JSONLD";
 import { FIRM } from "@/lib/config";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["500", "600", "700", "800", "900"],
-  variable: "--font-playfair",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-inter",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(FIRM.siteUrl),
@@ -98,8 +83,20 @@ export default function RootLayout({
   return (
     <html
       lang="en-GH"
-      className={`${playfair.variable} ${inter.variable} antialiased`}
+      className="antialiased"
     >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700;800;900&display=swap"
+        />
+      </head>
       <body className="min-h-screen flex flex-col bg-warm-surface text-warm-text overflow-x-hidden">
         <a
           href="#main-content"

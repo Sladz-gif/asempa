@@ -22,6 +22,10 @@
 
   --focus-ring: 3px solid #C9A45C;
   --focus-offset: 2px;
+
+  /* Google Fonts (loaded via <link> in layout.tsx) */
+  --font-playfair: "Playfair Display", Georgia, serif;
+  --font-inter: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 @layer base {
